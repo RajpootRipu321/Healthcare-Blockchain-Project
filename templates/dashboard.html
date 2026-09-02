@@ -1,0 +1,228 @@
+{% extends "base.html" %} {% block title %}Dashboard - HealthChain{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3">
+      <div class="sidebar p-3">
+        <h6 class="text-uppercase text-muted mb-3">Navigation</h6>
+        <nav class="nav flex-column">
+          <a class="nav-link active" href="{{ url_for('dashboard') }}">
+            <i class="bi bi-speedometer2"></i> Dashboard
+          </a>
+          {% if user.role.value in ['doctor', 'patient'] %}
+          <a class="nav-link" href="{{ url_for('chat') }}">
+            <i class="bi bi-chat-dots"></i> Chat
+          </a>
+          {% endif %}
+          <a class="nav-link" href="{{ url_for('upload') }}">
+            <i class="bi bi-cloud-upload"></i> Upload Image
+          </a>
+          <a class="nav-link" href="{{ url_for('records') }}">
+            <i class="bi bi-folder"></i> My Records
+          </a>
+          <a class="nav-link" href="{{ url_for('organizations') }}">
+            <i class="bi bi-hospital"></i> Organizations
+          </a>
+          {% if user.role.value in ['doctor', 'admin'] %}
+          <a class="nav-link" href="{{ url_for('request_access') }}">
+            <i class="bi bi-person-lines-fill"></i> Request Access
+          </a>
+          {% endif %} {% if user.role.value in ['patient', 'admin'] %}
+          <a class="nav-link" href="{{ url_for('consent_center') }}">
+            <i class="bi bi-shield-lock"></i> Consent Center
+          </a>
+          {% endif %}
+          <a class="nav-link" href="{{ url_for('view_blockchain') }}">
+            <i class="bi bi-link-45deg"></i> Blockchain
+          </a>
+        </nav>
+
+        <hr />
+
+        <div class="p-3 bg-light rounded">
+          <small class="text-muted">Logged in as</small>
+          <p class="mb-1 fw-bold">{{ user.username }}</p>
+          <span class="badge badge-role badge-{{ user.role.value }}"
+            >{{ user.role.value }}</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-9">
+      <div
+        class="d-flex flex-wrap justify-content-between align-items-center mb-4"
+      >
+        <div>
+          <h2 class="mb-1">Dashboard</h2>
+          <p class="text-muted mb-0">
+            Monitor encrypted records and streamline care workflows.
+          </p>
+        </div>
+        <span class="badge bg-light text-dark border px-3 py-2"
+          >{{ user.role.value|title }} View</span
+        >
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="stat-card stat-card-primary">
+            <i class="bi bi-file-medical mb-2" style="font-size: 2rem"></i>
+            <h3>{{ total_records }}</h3>
+            <p class="mb-0 opacity-75">Total Records</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card stat-card-secondary">
+            <i class="bi bi-shield-check mb-2" style="font-size: 2rem"></i>
+            <h3>Encrypted</h3>
+            <p class="mb-0 opacity-75">All data secured</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card stat-card-accent">
+            <i class="bi bi-hdd-network mb-2" style="font-size: 2rem"></i>
+            <h3>IPFS</h3>
+            <p class="mb-0 opacity-75">Decentralized storage</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="card mb-4">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Quick Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            {% if user.role.value in ['doctor', 'patient'] %}
+            <div class="col-md-4">
+              <a
+                href="{{ url_for('chat') }}"
+                class="btn btn-outline-primary w-100 py-3"
+              >
+                <i class="bi bi-chat-dots me-2"></i>Open Chat
+              </a>
+            </div>
+            {% endif %}
+            <div class="col-md-4">
+              <a
+                href="{{ url_for('upload') }}"
+                class="btn btn-outline-primary w-100 py-3"
+              >
+                <i class="bi bi-cloud-upload me-2"></i>Upload Medical Image
+              </a>
+            </div>
+            <div class="col-md-4">
+              <a
+                href="{{ url_for('records') }}"
+                class="btn btn-outline-success w-100 py-3"
+              >
+                <i class="bi bi-folder me-2"></i>View My Records
+              </a>
+            </div>
+            <div class="col-md-4">
+              <a
+                href="{{ url_for('view_blockchain') }}"
+                class="btn btn-outline-info w-100 py-3"
+              >
+                <i class="bi bi-link-45deg me-2"></i>View Blockchain
+              </a>
+            </div>
+            {% if user.role.value in ['doctor', 'admin'] %}
+            <div class="col-md-4">
+              <a
+                href="{{ url_for('request_access') }}"
+                class="btn btn-outline-warning w-100 py-3"
+              >
+                <i class="bi bi-person-lines-fill me-2"></i>Request Patient
+                Access
+              </a>
+            </div>
+            {% endif %} {% if user.role.value in ['patient', 'admin'] %}
+            <div class="col-md-4">
+              <a
+                href="{{ url_for('consent_center') }}"
+                class="btn btn-outline-dark w-100 py-3"
+              >
+                <i class="bi bi-shield-lock me-2"></i>Manage Consent
+              </a>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Records -->
+      <div class="card">
+        <div
+          class="card-header bg-white d-flex justify-content-between align-items-center"
+        >
+          <h5 class="mb-0">Recent Records</h5>
+          <a
+            href="{{ url_for('records') }}"
+            class="btn btn-sm btn-outline-primary"
+            >View All</a
+          >
+        </div>
+        <div class="card-body">
+          {% if records %}
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>IPFS Hash</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for record in records[:5] %}
+                <tr>
+                  <td>{{ record.timestamp }}</td>
+                  <td>
+                    <span class="badge bg-secondary"
+                      >{{ record.record_type }}</span
+                    >
+                  </td>
+                  <td><code>{{ record.ipfs_hash[:20] }}...</code></td>
+                  <td>
+                    <a
+                      href="{{ url_for('download', ipfs_hash=record.ipfs_hash) }}"
+                      class="btn btn-sm btn-outline-primary"
+                    >
+                      <i class="bi bi-download"></i>
+                    </a>
+                    <a
+                      href="{{ url_for('diagnose', ipfs_hash=record.ipfs_hash) }}"
+                      class="btn btn-sm btn-outline-success"
+                    >
+                      <i class="bi bi-cpu"></i>
+                    </a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="text-center py-4">
+            <i class="bi bi-inbox text-muted" style="font-size: 3rem"></i>
+            <p class="text-muted mt-2">
+              No records yet. Upload your first medical image!
+            </p>
+            <a href="{{ url_for('upload') }}" class="btn btn-primary">
+              <i class="bi bi-cloud-upload me-2"></i>Upload Now
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

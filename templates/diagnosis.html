@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}AI Diagnosis - HealthChain{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="mb-4 text-center text-md-start">
+                <h2 class="mb-1">AI Disease Detection</h2>
+                <p class="text-muted mb-0">Run model inference on encrypted records with secure decryption.</p>
+            </div>
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-cpu me-2 text-success"></i>
+                        AI Disease Detection
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-info mb-4">
+                        <strong>Analyzing Record:</strong><br>
+                        <code>{{ record.ipfs_hash }}</code>
+                    </div>
+
+                    {% if diagnosis %}
+                        <!-- Diagnosis Results -->
+                        <div class="alert alert-success">
+                            <h5><i class="bi bi-check-circle me-2"></i>Diagnosis Complete</h5>
+                            <small class="text-muted">Model used: {{ diagnosis.model_key or diagnosis.model_type }}</small>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h6 class="text-muted">Predicted Condition</h6>
+                                        <h3 class="text-primary">{{ diagnosis.predicted_class }}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h6 class="text-muted">Confidence</h6>
+                                        <h3 class="text-success">{{ (diagnosis.confidence * 100)|round(1) }}%</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Probability Distribution -->
+                        <h6>All Predictions:</h6>
+                        <div class="mb-4">
+                            {% for class_name, prob in diagnosis.all_predictions.items() %}
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between">
+                                    <span>{{ class_name }}</span>
+                                    <span>{{ (prob * 100)|round(1) }}%</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: {{ prob * 100 }}%"></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        {% if diagnosis.model_type == 'simulated' %}
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <strong>Note:</strong> {{ diagnosis.warning }}
+                        </div>
+                        {% endif %}
+
+                        <div class="alert alert-secondary">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Disclaimer:</strong> This AI prediction is for reference only and should not be used as a
+                            definitive medical diagnosis. Please consult a qualified healthcare professional.
+                        </div>
+
+                    {% else %}
+                        <!-- Request Diagnosis Form -->
+                        <form method="POST">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                            <div class="mb-4">
+                                <label class="form-label">Decryption Key</label>
+                                <input type="password" name="encryption_key" class="form-control" placeholder="Enter the encryption key to run diagnosis" required>
+                                <small class="text-muted">Required to decrypt and analyze the image</small>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">Model Selection</label>
+                                <select name="model_key" class="form-select">
+                                    <option value="auto" {% if selected_model == 'auto' %}selected{% endif %}>Auto (recommended)</option>
+                                    <option value="simulate" {% if selected_model == 'simulate' %}selected{% endif %}>Simulate (no trained model)</option>
+                                    {% for model_key in available_model_keys %}
+                                    <option value="{{ model_key }}" {% if selected_model == model_key %}selected{% endif %}>Manual: {{ model_key }}</option>
+                                    {% endfor %}
+                                </select>
+                                <small class="text-muted">
+                                    Auto checks these keys first: {% if auto_candidate_keys %}{{ auto_candidate_keys|join(', ') }}{% else %}no strong match from metadata/filename{% endif %}
+                                </small>
+                            </div>
+
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-cpu me-2"></i>Run AI Diagnosis
+                            </button>
+                        </form>
+
+                        <div class="alert alert-info mt-4">
+                            <h6><i class="bi bi-cpu me-2"></i>AI Model</h6>
+                            <p class="mb-0 small">
+                                Auto mode uses record metadata and filename hints to pick a matching model.
+                                Manual mode lets you force any loaded model while you add new models one by one.
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <a href="{{ url_for('records') }}" class="btn btn-outline-secondary mt-3">
+                <i class="bi bi-arrow-left me-2"></i>Back to Records
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

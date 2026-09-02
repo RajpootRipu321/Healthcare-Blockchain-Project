@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Consent Center - HealthChain{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-1"><i class="bi bi-shield-lock me-2"></i>Patient Consent Center</h2>
+    <p class="text-muted mb-4">Control which organizations and doctors can access your encrypted records.</p>
+
+    <div class="card mb-4">
+        <div class="card-header bg-white"><h5 class="mb-0">Hospital Sharing Policy</h5></div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('update_consent_policy') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="mb-3">
+                    <label class="form-label">Policy Mode</label>
+                    <select name="mode" id="policyMode" class="form-select" onchange="toggleOrgList()">
+                        <option value="allow_all" {% if policy.mode == 'allow_all' %}selected{% endif %}>Allow all verified organizations</option>
+                        <option value="allow_selected" {% if policy.mode == 'allow_selected' %}selected{% endif %}>Allow only selected organizations</option>
+                        <option value="deny_all" {% if policy.mode == 'deny_all' %}selected{% endif %}>Block all organization sharing</option>
+                    </select>
+                </div>
+
+                <div id="orgListSection" class="mb-3" {% if policy.mode != 'allow_selected' %}style="display:none"{% endif %}>
+                    <label class="form-label">Select Allowed Organizations</label>
+                    <div class="row g-2">
+                        {% for org in organizations %}
+                        <div class="col-md-6">
+                            <div class="form-check border rounded p-2">
+                                <input class="form-check-input" type="checkbox" name="organization_ids" value="{{ org.id }}" id="org_{{ loop.index }}" {% if org.id in policy.organization_ids %}checked{% endif %}>
+                                <label class="form-check-label" for="org_{{ loop.index }}">
+                                    {{ org.name }}
+                                    <small class="text-muted d-block">{{ org.org_type.value }}</small>
+                                </label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" type="submit">Save Sharing Policy</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-white"><h5 class="mb-0">Pending Access Requests</h5></div>
+        <div class="card-body">
+            {% for req in pending_requests %}
+            <div class="border rounded p-3 mb-3">
+                <div class="d-flex justify-content-between flex-wrap">
+                    <div>
+                        <h6 class="mb-1">{{ req.doctor_name }} ({{ req.organization_name or 'Unknown Org' }})</h6>
+                        <p class="text-muted mb-1">Reason: {{ req.reason }}</p>
+                        <p class="mb-0 small">Scope: {{ req.record_hash }} | Type: {{ req.access_type.value }}</p>
+                    </div>
+                    <div class="mt-2 mt-md-0">
+                        <form method="POST" action="{{ url_for('approve_request', request_id=req.id) }}" class="d-inline-block">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="number" name="duration_days" class="form-control form-control-sm mb-2" value="30" min="1" max="365" placeholder="Days">
+                            <button class="btn btn-sm btn-success" type="submit">Approve</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('deny_request', request_id=req.id) }}" class="d-inline-block ms-1">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="btn btn-sm btn-outline-danger" type="submit">Deny</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p class="text-muted mb-0">No pending requests.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-white"><h5 class="mb-0">Active Consents</h5></div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Doctor</th>
+                            <th>Organization</th>
+                            <th>Scope</th>
+                            <th>Expires</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in active_consents %}
+                        <tr>
+                            <td>{{ c.doctor_name }}</td>
+                            <td>{{ c.organization_name or '-' }}</td>
+                            <td>{{ c.record_hash }}</td>
+                            <td>{{ c.expires_at[:10] if c.expires_at else 'No expiry' }}</td>
+                            <td>
+                                <form method="POST" action="{{ url_for('revoke_consent', consent_id=c.consent_id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-warning">Revoke</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-muted">No active consents.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleOrgList() {
+    const mode = document.getElementById('policyMode').value;
+    const section = document.getElementById('orgListSection');
+    section.style.display = mode === 'allow_selected' ? 'block' : 'none';
+}
+</script>
+{% endblock %}

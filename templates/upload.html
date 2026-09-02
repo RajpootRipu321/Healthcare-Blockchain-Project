@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Medical Image - HealthChain{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+                <div class="mb-4 text-center text-md-start">
+                    <h2 class="mb-1">Upload Medical Image</h2>
+                    <p class="text-muted mb-0">Encrypt records before storage and optionally prep them for diagnosis.</p>
+                </div>
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-cloud-upload me-2 text-primary"></i>
+                        Upload Medical Image
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <!-- File Upload -->
+                        <div class="mb-4">
+                            <label class="form-label">Medical Image</label>
+                            <input type="file" name="file" class="form-control" accept=".png,.jpg,.jpeg,.gif,.dcm" required>
+                            <small class="text-muted">Supported: PNG, JPG, JPEG, GIF, DICOM (Max 16MB)</small>
+                        </div>
+
+                        <!-- Patient ID -->
+                        <div class="mb-3">
+                            <label class="form-label">Patient ID</label>
+                            <input type="text" name="patient_id" class="form-control" value="{{ user.id }}" placeholder="Patient identifier">
+                            <small class="text-muted">Leave as your ID or enter patient's ID (for doctors)</small>
+                        </div>
+
+                        <!-- Record Type -->
+                        <div class="mb-3">
+                            <label class="form-label">Record Type</label>
+                            <select name="record_type" class="form-select">
+                                <option value="xray">X-Ray</option>
+                                <option value="mri">MRI Scan</option>
+                                <option value="ct_scan">CT Scan</option>
+                                <option value="ultrasound">Ultrasound</option>
+                                <option value="medical_image" selected>Other Medical Image</option>
+                            </select>
+                        </div>
+
+                        <!-- Diagnosis Profile -->
+                        <div class="mb-3">
+                            <label class="form-label">Diagnosis Profile (Optional)</label>
+                            <select name="diagnosis_profile" class="form-select">
+                                <option value="">Auto from record type</option>
+                                <option value="brain_mri">Brain MRI Detection</option>
+                                <option value="chest_xray">Chest X-Ray Detection</option>
+                                <option value="ct_scan">CT Scan Detection</option>
+                                <option value="ultrasound">Ultrasound Detection</option>
+                                <option value="general">General Medical Image</option>
+                            </select>
+                            <small class="text-muted">Set this only when you want diagnosis to prefer a specific model family.</small>
+                        </div>
+
+                        <!-- Encryption Key -->
+                        <div class="mb-4">
+                            <label class="form-label">Encryption Key</label>
+                            <div class="input-group">
+                                <input type="password" name="encryption_key" id="encKey" class="form-control" placeholder="Enter a secure key" required>
+                                <button type="button" class="btn btn-outline-secondary" onclick="toggleKey()">
+                                    <i class="bi bi-eye" id="eyeIcon"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle"></i>
+                                Keep this key safe! You'll need it to decrypt and view the image later.
+                            </small>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="bi bi-shield-check me-2"></i>
+                            <strong>Security:</strong> Your image will be encrypted with AES-256 before upload.
+                            Only users with the encryption key can view the original image.
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="bi bi-cloud-upload me-2"></i>Encrypt & Upload
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Instructions -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h6>What happens when you upload:</h6>
+                    <ol class="mb-0 text-muted">
+                        <li>Image is encrypted with your key (AES-256)</li>
+                        <li>Encrypted file is stored on IPFS (decentralized)</li>
+                        <li>IPFS hash is recorded on blockchain</li>
+                        <li>You can share access with doctors</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleKey() {
+    const input = document.getElementById('encKey');
+    const icon = document.getElementById('eyeIcon');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'bi bi-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'bi bi-eye';
+    }
+}
+</script>
+{% endblock %}

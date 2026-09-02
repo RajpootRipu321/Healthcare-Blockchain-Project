@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}HealthChain - Secure Healthcare Data Sharing{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <p class="text-uppercase fw-semibold mb-3 opacity-75">Decentralized Care Infrastructure</p>
+                <h1 class="display-4 fw-bold mb-4">Secure Healthcare Data Sharing</h1>
+                <p class="lead mb-4">
+                    A blockchain-powered platform for encrypted medical image storage, role-based access, and AI-assisted diagnosis.
+                </p>
+                {% if not user %}
+                    <a href="{{ url_for('register') }}" class="btn btn-light btn-lg me-lg-2 mb-2 mb-lg-0">
+                        <i class="bi bi-person-plus me-2"></i>Get Started
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-lg">
+                        <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
+                    </a>
+                {% endif %}
+                <div class="hero-kpis">
+                    <div class="hero-kpi-card">
+                        <h5 class="mb-1">AES-256</h5>
+                        <small class="opacity-75">End-to-end encryption</small>
+                    </div>
+                    <div class="hero-kpi-card">
+                        <h5 class="mb-1">Chat Box</h5>
+                        <small class="opacity-75">Asynchronous Chat communication</small>
+                    </div>
+                    <div class="hero-kpi-card">
+                        <h5 class="mb-1">AI Models</h5>
+                        <small class="opacity-75">Clinical image insights</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="section-title text-center">Key Features</h2>
+        <p class="section-subtitle text-center mx-auto mb-5">
+            Built for patient privacy, transparent record tracking, and trusted collaboration between clinicians.
+        </p>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 p-4 text-center">
+                    <div class="feature-icon mx-auto">
+                        <i class="bi bi-shield-lock"></i>
+                    </div>
+                    <h4>AES Encryption</h4>
+                    <p class="text-muted">
+                        Your medical data is encrypted with AES-256 before storage.
+                        Only you and authorized users can decrypt it.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 p-4 text-center">
+                    <div class="feature-icon mx-auto">
+                        <i class="bi bi-hdd-network"></i>
+                    </div>
+                    <h4>Chat Box</h4>
+                    <p class="text-muted">
+                        Chat feature for Patient & Doctor,  
+                        to communication about the latest updates.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 p-4 text-center">
+                    <div class="feature-icon mx-auto">
+                        <i class="bi bi-link-45deg"></i>
+                    </div>
+                    <h4>Blockchain Records</h4>
+                    <p class="text-muted">
+                        Immutable audit trail of all data access and modifications.
+                        Complete transparency.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 p-4 text-center">
+                    <div class="feature-icon mx-auto">
+                        <i class="bi bi-cpu"></i>
+                    </div>
+                    <h4>AI Diagnosis</h4>
+                    <p class="text-muted">
+                        Deep learning models (CNN/MobileNet) for disease detection
+                        from medical images.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 p-4 text-center">
+                    <div class="feature-icon mx-auto">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+                    <h4>Role-Based Access</h4>
+                    <p class="text-muted">
+                        Patients, doctors, and admins have different permissions.
+                        Fine-grained access control.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 p-4 text-center">
+                    <div class="feature-icon mx-auto">
+                        <i class="bi bi-share"></i>
+                    </div>
+                    <h4>Secure Sharing</h4>
+                    <p class="text-muted">
+                        Share medical records with doctors securely.
+                        Revoke access anytime.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="section-title text-center">How It Works</h2>
+        <p class="section-subtitle text-center mx-auto mb-5">
+            Every upload follows a verifiable flow from encryption through diagnosis and consented access.
+        </p>
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="workflow-panel">
+                    <div class="workflow-step">
+                        <span class="step-badge">1</span>
+                        <div>
+                            <h5 class="mb-1">Upload</h5>
+                            <p class="text-muted mb-0">Submit a medical image with your private encryption key.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <span class="step-badge">2</span>
+                        <div>
+                            <h5 class="mb-1">Encrypt</h5>
+                            <p class="text-muted mb-0">The image is sealed locally with AES-256 before leaving your device.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <span class="step-badge">3</span>
+                        <div>
+                            <h5 class="mb-1">Store</h5>
+                            <p class="text-muted mb-0">Encrypted payload is pushed to Robust Blob Store for resilient storage.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <span class="step-badge">4</span>
+                        <div>
+                            <h5 class="mb-1">Record</h5>
+                            <p class="text-muted mb-0">Blockchain entries create a tamper-resistant audit trail.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <span class="step-badge">5</span>
+                        <div>
+                            <h5 class="mb-1">Diagnose</h5>
+                            <p class="text-muted mb-0">AI models run securely when users provide authorized decryption keys.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card p-4 h-100">
+                    <h4 class="mb-3">Designed For Trust</h4>
+                    <p class="text-muted mb-4">
+                        Patients keep control of keys and consent. Doctors gain transparent, accountable access for clinical workflows.
+                    </p>
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="bi bi-shield-check fs-3 text-success"></i>
+                            <div>
+                                <h6 class="mb-1">Privacy First</h6>
+                                <small class="text-muted">Data remains encrypted at rest and in transit.</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="bi bi-clipboard2-pulse fs-3 text-primary"></i>
+                            <div>
+                                <h6 class="mb-1">Clinical Utility</h6>
+                                <small class="text-muted">Fast diagnosis workflows for MRI, X-Ray, CT, and ultrasound.</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="bi bi-journal-check fs-3" style="color: #f26f3f;"></i>
+                            <div>
+                                <h6 class="mb-1">Full Auditability</h6>
+                                <small class="text-muted">Every upload, consent, and access request is traceable.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5">
+    <div class="container text-center">
+        <h2 class="section-title">Ready to Get Started?</h2>
+        <p class="lead text-muted mb-4">
+            Join our secure healthcare data sharing platform today.
+        </p>
+        {% if not user %}
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                Create Free Account
+            </a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

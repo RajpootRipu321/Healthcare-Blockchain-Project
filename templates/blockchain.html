@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Blockchain - HealthChain{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1"><i class="bi bi-link-45deg me-2"></i>Blockchain Explorer</h2>
+            <p class="text-muted mb-0">Inspect immutable record events across the chain timeline.</p>
+        </div>
+        <span class="badge bg-primary fs-6">{{ length }} Blocks</span>
+    </div>
+
+    <div class="row g-4">
+        {% for block in chain|reverse %}
+        <div class="col-12">
+            <div class="card {% if loop.first %}border-primary{% endif %}">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="badge bg-{% if block.index == 0 %}success{% else %}primary{% endif %} me-2">
+                            Block #{{ block.index }}
+                        </span>
+                        {% if block.index == 0 %}
+                        <span class="badge bg-success">Genesis Block</span>
+                        {% endif %}
+                    </div>
+                    <small class="text-muted">{{ block.timestamp }}</small>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Previous Hash:</strong><br>
+                                <code class="small text-break">{{ block.previous_hash }}</code>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Proof:</strong> {{ block.proof }}
+                            </p>
+                        </div>
+                    </div>
+
+                    {% if block.records %}
+                    <hr>
+                    <h6>Records in this block:</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Patient ID</th>
+                                    <th>Type</th>
+                                    <th>IPFS Hash</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in block.records %}
+                                <tr>
+                                    <td><code>{{ record.patient_id[:8] }}...</code></td>
+                                    <td><span class="badge bg-secondary">{{ record.record_type }}</span></td>
+                                    <td><code>{{ record.ipfs_hash[:20] }}...</code></td>
+                                    <td>{{ record.timestamp }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0"><em>No records in this block</em></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

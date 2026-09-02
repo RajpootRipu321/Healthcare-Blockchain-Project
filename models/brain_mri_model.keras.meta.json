@@ -1,0 +1,7 @@
+{
+  "classes": [
+    "no",
+    "yes"
+  ],
+  "preprocessing_mode": "mobilenet"
+}

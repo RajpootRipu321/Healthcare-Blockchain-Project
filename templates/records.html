@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}My Records - HealthChain{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1"><i class="bi bi-folder me-2"></i>My Medical Records</h2>
+            <p class="text-muted mb-0">Browse encrypted assets, run diagnosis, and download securely.</p>
+        </div>
+        <a href="{{ url_for('upload') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-2"></i>Upload New
+        </a>
+    </div>
+
+    {% if records %}
+        <div class="row g-4">
+            {% for record in records %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header bg-white d-flex justify-content-between">
+                        <span class="badge bg-primary">{{ record.record_type }}</span>
+                        <small class="text-muted">Block #{{ record.block_index }}</small>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-2">
+                            <strong>IPFS Hash:</strong><br>
+                            <code class="small">{{ record.ipfs_hash }}</code>
+                        </p>
+                        <p class="mb-2">
+                            <strong>Date:</strong> {{ record.timestamp }}
+                        </p>
+                        {% if record.diagnosis %}
+                        <p class="mb-0">
+                            <strong>Diagnosis:</strong>
+                            <span class="badge bg-info">{{ record.diagnosis }}</span>
+                            {% if record.confidence %}
+                            ({{ (record.confidence * 100)|round(1) }}%)
+                            {% endif %}
+                        </p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-white">
+                        <div class="btn-group w-100">
+                            <a href="{{ url_for('download', ipfs_hash=record.ipfs_hash) }}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-download"></i> Download
+                            </a>
+                            <a href="{{ url_for('diagnose', ipfs_hash=record.ipfs_hash) }}" class="btn btn-outline-success btn-sm">
+                                <i class="bi bi-cpu"></i> Diagnose
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
+                <h4 class="mt-3">No Records Found</h4>
+                <p class="text-muted">You haven't uploaded any medical images yet.</p>
+                <a href="{{ url_for('upload') }}" class="btn btn-primary">
+                    <i class="bi bi-cloud-upload me-2"></i>Upload Your First Image
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

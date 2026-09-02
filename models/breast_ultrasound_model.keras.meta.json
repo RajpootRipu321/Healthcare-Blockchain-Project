@@ -1,0 +1,8 @@
+{
+  "classes": [
+    "benign",
+    "malignant",
+    "normal"
+  ],
+  "preprocessing_mode": "mobilenet"
+}

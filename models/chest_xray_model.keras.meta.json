@@ -1,0 +1,7 @@
+{
+  "classes": [
+    "NORMAL",
+    "PNEUMONIA"
+  ],
+  "preprocessing_mode": "mobilenet"
+}

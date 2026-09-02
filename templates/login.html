@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Login - HealthChain{% endblock %}
+
+{% block content %}
+<div class="container auth-shell py-4">
+    <div class="row justify-content-center w-100">
+        <div class="col-xl-9 col-lg-10">
+            <div class="card auth-card">
+                <div class="row g-0">
+                    <div class="col-lg-5 d-none d-lg-flex auth-accent p-4 p-xl-5 flex-column justify-content-between">
+                        <div>
+                            <h3 class="mb-3">HealthChain Portal</h3>
+                            <p class="mb-0 opacity-75">Sign in to manage encrypted records, organization access, and AI diagnosis workflows.</p>
+                        </div>
+                        <ul class="auth-list">
+                            <li><i class="bi bi-shield-check me-2"></i>AES-secured records</li>
+                            <li><i class="bi bi-link-45deg me-2"></i>Blockchain audit trail</li>
+                            <li><i class="bi bi-cpu me-2"></i>Integrated diagnosis tools</li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-7 p-4 p-xl-5">
+                        <div class="text-center mb-4">
+                            <i class="bi bi-heart-pulse" style="font-size: 3rem; color: #14967a;"></i>
+                            <h2 class="mt-3">Welcome Back</h2>
+                            <p class="text-muted">Sign in to your account</p>
+                        </div>
+
+                        <form method="POST" action="{{ url_for('login') }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                            <div class="mb-3">
+                                <label class="form-label">Username or Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    <input type="text" name="username" class="form-control" placeholder="Enter username or email" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                    <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 py-2">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                            </button>
+                        </form>
+
+                        <hr class="my-4">
+
+                        <p class="text-center text-muted mb-0">
+                            Don't have an account?
+                            <a href="{{ url_for('register') }}">Register here</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,145 @@
+{% extends "base.html" %} {% block title %}Write Prescription - HealthChain{%
+endblock %} {% block content %}
+<div class="container py-4">
+  <div class="mb-4">
+    <h2 class="mb-1">
+      <i class="bi bi-file-earmark-medical me-2"></i>Prescriptions
+    </h2>
+    <p class="text-muted mb-0">
+      Prescribe medication to patients you're currently consulting.
+    </p>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="card h-100">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">New Prescription</h5>
+        </div>
+        <div class="card-body">
+          {% if not patients %}
+          <div class="alert alert-warning mb-0">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            You have no patients with an active consent yet. A patient must
+            approve your access request before you can prescribe for them.
+          </div>
+          {% elif not doctor_orgs %}
+          <div class="alert alert-warning mb-0">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            You're not linked to any organization yet. Prescriptions must be
+            issued under an organization &mdash;
+            <a href="{{ url_for('organizations') }}">link one here</a> first.
+          </div>
+          {% else %}
+          <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+            <div class="mb-3">
+              <label class="form-label">Patient</label>
+              <select name="patient_id" class="form-select" required>
+                <option value="">Select a patient...</option>
+                {% for p in patients %}
+                <option value="{{ p.patient_id }}">{{ p.patient_name }}</option>
+                {% endfor %}
+              </select>
+              <small class="text-muted"
+                >Only patients with an active consent are listed.</small
+              >
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Issuing Organization</label>
+              {% if doctor_orgs|length == 1 %}
+              <input
+                type="text"
+                class="form-control"
+                value="{{ doctor_orgs[0].name }}"
+                disabled
+              />
+              <input
+                type="hidden"
+                name="organization_id"
+                value="{{ doctor_orgs[0].id }}"
+              />
+              {% else %}
+              <select name="organization_id" class="form-select" required>
+                <option value="">Select an organization...</option>
+                {% for org in doctor_orgs %}
+                <option value="{{ org.id }}">{{ org.name }}</option>
+                {% endfor %}
+              </select>
+              <small class="text-muted">
+                You belong to more than one organization &mdash; this locks
+                which pharmacy network can later dispense this prescription.
+              </small>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Prescription</label>
+              <textarea
+                name="content"
+                class="form-control"
+                rows="5"
+                required
+                placeholder="e.g. Amoxicillin 500mg - 1 tablet 3x daily after meals"
+              ></textarea>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">Course Duration</label>
+              <select name="duration_key" class="form-select" required>
+                <option value="">Select duration...</option>
+                {% for key, preset in duration_presets.items() %}
+                <option value="{{ key }}">{{ preset.label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="bi bi-file-earmark-plus me-2"></i>Create Prescription
+            </button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card h-100">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Recently Prescribed</h5>
+        </div>
+        <div class="card-body">
+          {% if recent_prescriptions %} {% for rx in recent_prescriptions %}
+          <div class="border rounded p-3 mb-3">
+            <div class="d-flex justify-content-between align-items-start mb-1">
+              <strong>{{ rx.patient_name }}</strong>
+              {% if rx.display_status == 'not_started' %}
+              <span class="badge bg-secondary">Not Started</span>
+              {% elif rx.display_status == 'started' %}
+              <span class="badge bg-primary">Started</span>
+              {% elif rx.display_status == 'completed' %}
+              <span class="badge bg-success">Completed</span>
+              {% else %}
+              <span class="badge bg-danger">Expired</span>
+              {% endif %}
+            </div>
+            <p class="mb-1 small text-muted">
+              <code>{{ rx.rx_uid }}</code> &middot; {{ rx.org_name }} &middot;
+              {{ rx.duration_label }}
+            </p>
+            <p class="mb-0 small">
+              {{ rx.content[:120] }}{% if rx.content|length > 120 %}...{% endif
+              %}
+            </p>
+          </div>
+          {% endfor %} {% else %}
+          <p class="text-muted mb-0">No prescriptions written yet.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

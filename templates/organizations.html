@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Organizations - HealthChain{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1"><i class="bi bi-hospital me-2"></i>Organizations</h2>
+            <p class="text-muted mb-0">Create or join institutions for verified care collaboration.</p>
+        </div>
+        {% if user_org %}
+        <span class="badge bg-success">Linked: {{ user_org.name }}</span>
+        {% else %}
+        <span class="badge bg-warning text-dark">No organization linked</span>
+        {% endif %}
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Create Organization</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="action" value="create">
+
+                        <div class="mb-3">
+                            <label class="form-label">Hospital/Organization Name</label>
+                            <input type="text" name="name" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Type</label>
+                            <select name="org_type" class="form-select" required>
+                                <option value="hospital">Hospital</option>
+                                <option value="clinic">Clinic</option>
+                                <option value="laboratory">Laboratory</option>
+                                <option value="pharmacy">Pharmacy</option>
+                                <option value="insurance">Insurance</option>
+                                <option value="research">Research</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Address</label>
+                            <input type="text" name="address" class="form-control" placeholder="Optional">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">License Number</label>
+                            <input type="text" name="license_number" class="form-control" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Create and Link</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Join Existing Organization</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" class="mb-4">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="action" value="join">
+
+                        <div class="mb-3">
+                            <label class="form-label">Organization</label>
+                            <select name="organization_id" class="form-select" required>
+                                <option value="">Select...</option>
+                                {% for org in organizations %}
+                                <option value="{{ org.id }}">{{ org.name }} ({{ org.org_type.value }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Membership Role</label>
+                            <select name="membership_role" class="form-select">
+                                <option value="member">Member</option>
+                                <option value="doctor">Doctor</option>
+                                <option value="owner">Owner</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-outline-primary w-100">Link Organization</button>
+                    </form>
+
+                    <h6>Available Organizations</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for org in organizations %}
+                                <tr>
+                                    <td>{{ org.name }}</td>
+                                    <td><span class="badge bg-light text-dark">{{ org.org_type.value }}</span></td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="2" class="text-muted">No organizations yet.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
